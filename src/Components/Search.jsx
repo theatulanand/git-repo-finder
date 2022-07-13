@@ -112,9 +112,7 @@ export default function Search() {
                     >Search</Button>
                 </Box>
                 <Box sx={{
-                    width: "65%",
-                    height: "auto",
-                    boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
+                    width: "65%"
                 }}>
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                         <TableContainer sx={{ maxHeight: 440 }}>
