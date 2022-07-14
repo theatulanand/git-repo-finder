@@ -1,6 +1,6 @@
 import React from 'react'
 import Box from '@mui/material/Box';
-import { TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, TextField } from '@mui/material';
 import { Button } from '@mui/material';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
@@ -13,13 +13,15 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import LinearProgress from '@mui/material/LinearProgress';
+import { Select } from '@mui/material';
 
 export default function Search() {
-    const [text, setText] = useState("");
+    const [text, setText] = useState("react");
     const [data, setData] = useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [load, setLoad] = useState(true)
+    const [load, setLoad] = useState(true);
+    const [sort, setSort] = useState("");
 
     const fetchData = (name) => {
         return axios.get(`https://api.github.com/search/repositories?q=${name}`)
@@ -27,8 +29,9 @@ export default function Search() {
 
     useEffect(() => {
         setLoad(true);
-        fetchData("react").then(res => {setData(res.data.items);
-         setLoad(false)
+        fetchData("react").then(res => {
+            setData(res.data.items);
+            setLoad(false)
         });
     }, [])
 
@@ -36,11 +39,15 @@ export default function Search() {
         setText(e.target.value);
     };
 
+    const handleSort = (e) => {
+        setSort(e.target.value);
+    }
+
     const handleSearch = () => {
         setLoad(true);
-        setText("");
-        fetchData(text).then(res => {setData(res.data.items);
-         setLoad(false);
+        fetchData(text).then(res => {
+            setData(res.data.items);
+            setLoad(false);
         });
     }
 
@@ -79,6 +86,14 @@ export default function Search() {
         setPage(newPage);
     };
 
+    const sortData = (type) =>{
+        setLoad(true)
+        axios.get(`https://api.github.com/search/repositories?q=${text}&sort=forks&order=${type}`).then(res => {
+            setData(res.data.items);
+            setLoad(false);
+        });
+    }
+
     return (
         <>
             <Box sx={{ width: '100%' }}>
@@ -110,6 +125,31 @@ export default function Search() {
                             handleSearch();
                         }}
                     >Search</Button>
+                    <div style={{ marginTop: "20px" }}>
+                        <FormControl sx={{
+                            m: 1,
+                            minWidth: 190,
+                            marginTop: "10px",
+                            marginLeft: "0px",
+                            paddingLeft: "90px",
+                            paddingRight: "90px",
+                        }} size="small">
+                            <InputLabel sx={{
+                                marginLeft: "90px"
+                            }} id="demo-select-small">Sort By Forks</InputLabel>
+                            <Select
+                                labelId="demo-select-small"
+                                id="demo-select-small"
+                                value={sort}
+                                label="Sort By Forks"
+                                onChange={handleSort}
+                            >
+                                <MenuItem onClick={() =>{sortData("asc")}} value={"Ascending"}>Ascending</MenuItem>
+                                <MenuItem onClick={() =>{sortData("desc")}} value={"Descending"}>Descending</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+
                 </Box>
                 <Box sx={{
                     width: "65%"
